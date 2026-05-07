@@ -8,7 +8,7 @@ env/
 .env
 
 # --- AI/ML Specific ---
-# Exclude local vector databases (Chroma, FAISS, etc.)
+# Exclude local vector databases
 *.db
 *.sqlite
 chroma/
@@ -22,11 +22,10 @@ logs/
 .ipynb_checkpoints/
 
 # --- Large Files ---
-# Exclude models or large datasets if downloaded locally
 models/
 data/*.csv
 data/*.json
-!data/sample.json  # Keep sample files if needed
+!data/sample.json
 
 # --- IDE & OS ---
 .vscode/

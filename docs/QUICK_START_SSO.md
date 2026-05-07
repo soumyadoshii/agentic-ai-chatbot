@@ -1,28 +1,27 @@
-# Quick Start: Google SSO for Unify AI ChatBot
+# Quick Start: Google SSO Integration
 
 ## 🚀 Quick Setup (5 Minutes)
 
 ### Step 1: Install Dependencies
+Ensure your environment is set up:
 ```bash
 pip install -r requirements.txt
 ```
 
 ### Step 2: Get Google OAuth Credentials
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing one
-3. Enable **Google+ API** and **Google Identity Toolkit API**
-4. Create **OAuth 2.0 Client ID** (Web application)
+1. Go to [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a new project or select an existing one.
+3. Enable **Google+ API** and **Google Identity Toolkit API**.
+4. Create **OAuth 2.0 Client ID** (Web application).
 5. Add authorized redirect URIs:
-   - Local: `http://localhost:8501`
-   - Production: `https://your-domain.com`
+   - Local testing: `http://localhost:8501`
 
 ### Step 3: Configure .env File
 
-Update your `.env` file with the credentials:
+Update your `.env` file in the root directory with the credentials:
 
 ```env
-# Add these lines to your existing .env file
 GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET="your-client-secret"
 OAUTH_REDIRECT_URI="http://localhost:8501"
@@ -38,54 +37,47 @@ streamlit run main.py
 
 1. Navigate to `http://localhost:8501`
 2. Click **"🔐 Login with Google"** button
-3. Sign in with your @group.com account
+3. Sign in with your allowed Google account
 4. You're in! 🎉
 
-## 📋 What Changed?
+## 📋 System Capabilities
 
-### Files Modified:
-- ✅ `requirements.txt` - Added Google OAuth libraries
-- ✅ `main.py` - Added Google SSO functionality
-- ✅ `config.yaml` - Added OAuth settings
-- ✅ `.env` - Added OAuth credentials
+### Architecture Updates:
+- ✅ **Libraries:** Google OAuth integrations established.
+- ✅ **UI Routing:** OAuth callback handling built into Streamlit flow.
+- ✅ **Security:** Domain restrictions enforced at the application level.
 
-### New Features:
-- ✅ **Login with Google** button on login page
-- ✅ Side-by-side login options (Password OR Google)
-- ✅ Domain restriction (@group.com only)
-- ✅ Admin support for Google SSO users
-- ✅ Existing login system unchanged
+### Authentication Features:
+- ✅ **Dual-Auth:** Side-by-side login options (Password OR Google).
+- ✅ **Domain Enforcement:** Restrict login to specific email domains (e.g., `@gmail.com` or corporate domains).
+- ✅ **Dynamic RBAC:** Automatic provisioning of Admin rights based on SSO email verification.
 
-## 🔐 Making Google Users Admin
+## 🔐 Provisioning Google Users as Admins
 
-Edit `config.yaml`:
+To grant a user Admin capabilities (like uploading PDFs and retraining the vector database) via SSO, edit your `config.yaml` at the root level:
 
 ```yaml
 google_oauth:
   enabled: true
-  allowed_domain: "  admin_google_users:
+  allowed_domain: "gmail.com"
+  admin_google_users:
     - your.email@gmail.com
 ```
 
-## 🎯 Key Points
+## 🎯 Important Security Notes
 
-- ✅ Existing username/password login still works
-- ✅ Both login methods work simultaneously
-- ✅ Only @group.com emails can login via Google
-- ✅ Google SSO users are regular users by default
-- ✅ Can make specific Google users admins via config
+- Existing local hashed username/password logins function independently of SSO.
+- Google SSO users are provisioned as regular users by default unless explicitly listed in `admin_google_users`.
+- Ensure your `.env` file is never committed to version control.
 
-## 📖 Full Documentation
+## 🆘 Troubleshooting
 
-See `GOOGLE_SSO_SETUP.md` for complete setup guide.
+**Issue:** "OAuth not configured" warning on the login page.
+**Fix:** Ensure `GOOGLE_CLIENT_ID` is properly set in your `.env` file.
 
-## 🆘 Common Issues
+**Issue:** Authentication fails or loops.
+**Fix:** Verify the `OAUTH_REDIRECT_URI` matches exactly between your Google Cloud Console and your `.env` file.
 
-**Issue**: "OAuth not configured" warning
-**Fix**: Set `GOOGLE_CLIENT_ID` in `.env` file
-
-**Issue**: Can't login with Google
-**Fix**: Verify redirect URI matches in Google Console and `.env`
-
-**Issue**: Wrong email domain
-**Fix**: Only @group.com emails are allowed (by design)
+**Issue:** "Only allowed email addresses" error.
+**Fix:** Check the `allowed_domain` parameter in `config.yaml` and ensure the testing email matches.
+```

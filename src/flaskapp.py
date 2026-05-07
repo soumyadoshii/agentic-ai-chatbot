@@ -1,34 +1,45 @@
-#updating the flask application to support actual UI's streaming responses
-# but in end point it will give response at once
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from trainapp import user_input
+from dotenv import load_dotenv
+
+# Load environment variables explicitly
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes by default
+CORS(app)  
 
-# In-memory storage for API keys (use a database in production)
-api_keys = os.getenv("SECURE_API_KEY")
-
-# Route to handle chatbot queries with API key validation
 @app.route('/chatbot', methods=['POST'])
 def chatbot():
-    api_key = request.headers.get('x-api-key')
-    #if api_key not in api_keys:
-    #    return jsonify({'error': 'Invalid API key'}), 403
-
-    data = request.json
-    user_question = data.get('question')
-    chat_history = data.get('chat_history')
-    
-    
-    response = user_input(user_question, chat_history)  # this is code when for loop sleep timer is not in count
-    # Collecting all words from the generator and form a complete response this is for streaming responses 
-    # response = " ".join(word for word in user_input(user_question, chat_history))
-    return jsonify({'response': response})
+    try:
+        # 1. Strict Input Validation
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No JSON payload provided'}), 400
+            
+        user_question = data.get('question')
+        if not user_question:
+            return jsonify({'error': 'The "question" field is required'}), 400
+            
+        # Default to empty list if no history provided, ensure it's a list
+        chat_history = data.get('chat_history', [])
+        if not isinstance(chat_history, list):
+            return jsonify({'error': '"chat_history" must be a list'}), 400
+        
+        # 2. Process Request through your AI Logic
+        response = user_input(user_question, chat_history)  
+        
+        # 3. Return Successful Response
+        return jsonify({'response': response}), 200
+        
+    except Exception as e:
+        # Catch any unexpected RAG/LLM errors so the server doesn't crash
+        return jsonify({'error': f'Internal Server Error: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    host = os.getenv('FLASK_RUN_HOST')
-    port = int(os.getenv('FLASK_RUN_PORT'))
+    # 4. Safe fallbacks so the app boots even if .env is missing
+    host = os.getenv('FLASK_RUN_HOST', '0.0.0.0')
+    port = int(os.getenv('FLASK_RUN_PORT', 17191))
+    
     app.run(debug=True, host=host, port=port)

@@ -1,31 +1,20 @@
-admin_users:
-- suraj.galande
-- dhananjay.gundewar
-
 cookie:
   expiry_days: 30
-  key: supersecretkeyunifychatbot0123456789
-  name: unify_auth
-
-credentials:
-  usernames:
-    dhananjay.gundewar:
-      email: dhananjay.gundewar@group.com
-      name: DJ
-      password: DJ@123
-    
-    suraj.galande:
-      email: suraj.galande@group.com
-      name: Suraj
-      password: Suraj@_7
+  key: supersecretkeychatbot0123456789
+  name: chatbot_auth
 
 # Google OAuth Settings
 google_oauth:
   enabled: true
-  allowed_domain: "group.com"
-  # Users who login via Google SSO will be regular users by default
-  # To make a Google SSO user an admin, add their email to admin_google_users list below
-  admin_google_users: []
-  Example: 
-  - suraj.galande@group.com
-  - dhananjay.gundewar@group.com
+  allowed_domain: "gmail.com" 
+  admin_google_users:
+    - soumyadoshi28@gmail.com # Put your personal Gmail here to test SSO admin rights
+
+# Traditional Login Credentials 
+credentials:
+  usernames:
+    soham:
+      name: "Soumya Doshi"
+      email: "soumyadoshi28@example.com"
+      # The password below is hashed. The plaintext password to log in is: admin123
+      password: "scrypt:32768:8:1$k0hKj0iLw3tT2B9R$0d5b7a1f5999824f11467615bc5e59b2d8e036e864c2cf9b17355030e4dbdfb8"
